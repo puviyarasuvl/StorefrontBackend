@@ -1,0 +1,50 @@
+{
+    "name": "storefrontbackend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "npx tsc",
+        "jasmine": "jasmine",
+        "test": "npm run build && set ENV=test&& db-migrate --env test down && db-migrate --env test up && npm run jasmine && db-migrate --env test down",
+        "start": "nodemon --exec npx ts-node src/index.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/puviyarasuvl/StorefrontBackend.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/puviyarasuvl/StorefrontBackend/issues"
+    },
+    "homepage": "https://github.com/puviyarasuvl/StorefrontBackend#readme",
+    "devDependencies": {
+        "@types/bcrypt": "^5.0.0",
+        "@types/express": "^4.17.13",
+        "@types/jasmine": "^3.8.1",
+        "@types/jsonwebtoken": "^8.5.4",
+        "@types/node": "^16.3.1",
+        "@types/pg": "^8.6.1",
+        "@types/supertest": "^2.0.11",
+        "eslint": "^7.30.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^3.4.0",
+        "nodemon": "^2.0.11",
+        "prettier": "^2.3.2",
+        "ts-node": "^10.1.0",
+        "typescript": "^4.3.5"
+    },
+    "dependencies": {
+        "bcrypt": "^5.0.1",
+        "db-migrate": "^0.11.12",
+        "db-migrate-pg": "^1.2.2",
+        "dotenv": "^10.0.0",
+        "express": "^4.17.1",
+        "jasmine": "^3.8.0",
+        "jasmine-spec-reporter": "^7.0.0",
+        "jsonwebtoken": "^8.5.1",
+        "pg": "^8.6.0",
+        "supertest": "^6.1.3"
+    }
+}
