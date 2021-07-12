@@ -39,69 +39,48 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserModel = void 0;
+exports.OrderModel = void 0;
 var database_1 = __importDefault(require("../database"));
-var bcrypt_1 = __importDefault(require("bcrypt"));
-var dotenv_1 = __importDefault(require("dotenv"));
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-dotenv_1.default.config();
-var pepper = process.env.BCRYPT_PASSWORD;
-var saltRounds = process.env.SALT_ROUNDS;
-var secret = process.env.JWT_SECRET;
-/* Class to represent the users table */
-var UserModel = /** @class */ (function () {
-    function UserModel() {
+/* Class to represent the orders table */
+var OrderModel = /** @class */ (function () {
+    function OrderModel() {
     }
-    /* method : create. Creates a new user using the given details and return auth token
-       input params : User
-       return : Promise<string> */
-    UserModel.prototype.create = function (newUser) {
+    /* method : create. Creates and returns a new order
+       input params : user id
+       return : Promise<Order> */
+    OrderModel.prototype.create = function (userId) {
         return __awaiter(this, void 0, void 0, function () {
-            var passwordHash, conn, sql, result, createdUser, token, err_1;
+            var conn, status, sql, result, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        passwordHash = bcrypt_1.default.hashSync(newUser.password + pepper, parseInt(saltRounds));
-                        return [4 /*yield*/, database_1.default.connect()];
+                    case 0: return [4 /*yield*/, database_1.default.connect()];
                     case 1:
                         conn = _a.sent();
+                        status = 'Open';
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'INSERT INTO users (id, firstname, lastname, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *';
-                        return [4 /*yield*/, conn.query(sql, [
-                                newUser.id,
-                                newUser.firstName,
-                                newUser.lastName,
-                                passwordHash,
-                                newUser.role,
-                            ])];
+                        sql = 'INSERT INTO orders (userId, status) VALUES ($1, $2) RETURNING *';
+                        return [4 /*yield*/, conn.query(sql, [userId, status])];
                     case 3:
                         result = _a.sent();
-                        createdUser = result.rows[0];
-                        token = jsonwebtoken_1.default.sign({
-                            userId: createdUser.id,
-                            fName: createdUser.firstName,
-                            lName: createdUser.lastName,
-                            role: createdUser.role,
-                        }, secret, { expiresIn: '1h' });
                         conn.release();
-                        return [2 /*return*/, token];
+                        return [2 /*return*/, result.rows[0]];
                     case 4:
                         err_1 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to create new user.', err_1);
+                        console.log('Failed to create new order', err_1);
                         throw err_1;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    /* method : index. Returns all the users information.
+    /* method : index. Returns all the avilable orders
        input params :
-       return : Promise<User []> */
-    UserModel.prototype.index = function () {
+       return : Promise<Order []> */
+    OrderModel.prototype.index = function () {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, err_2;
             return __generator(this, function (_a) {
@@ -112,7 +91,7 @@ var UserModel = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'SELECT * FROM users';
+                        sql = 'SELECT * FROM orders';
                         return [4 /*yield*/, conn.query(sql)];
                     case 3:
                         result = _a.sent();
@@ -122,17 +101,17 @@ var UserModel = /** @class */ (function () {
                         err_2 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to query all users.', err_2);
+                        console.log('Failed to fetch the orders', err_2);
                         throw err_2;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    /* method : show. Returns the requested user's details
-       input params : user id
-       return : Promise<User> */
-    UserModel.prototype.show = function (userId) {
+    /* method : show. Returns the order details based on the order id
+       input params : order id
+       return : Promise<Order> */
+    OrderModel.prototype.show = function (orderId) {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, err_3;
             return __generator(this, function (_a) {
@@ -143,8 +122,8 @@ var UserModel = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'SELECT * FROM users WHERE id=$1';
-                        return [4 /*yield*/, conn.query(sql, [userId])];
+                        sql = 'SELECT * FROM orders WHERE id=$1';
+                        return [4 /*yield*/, conn.query(sql, [orderId])];
                     case 3:
                         result = _a.sent();
                         conn.release();
@@ -153,19 +132,19 @@ var UserModel = /** @class */ (function () {
                         err_3 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to query user details.', err_3);
+                        console.log('Failed to fetch the order details', err_3);
                         throw err_3;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    /* method : authenticate. Authenticates provided user and returns JWT token on succesful authentication
-       input params : User
-       return : Promise<string> */
-    UserModel.prototype.authenticate = function (userId, password) {
+    /* method : update. Updates the status information in the order id
+       input params : Order id, status
+       return : Promise<Order> */
+    OrderModel.prototype.update = function (orderId, status) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, result, selectedUser, token, err_4;
+            var conn, sql, result, err_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, database_1.default.connect()];
@@ -174,41 +153,68 @@ var UserModel = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'SELECT * FROM users WHERE id=$1';
-                        return [4 /*yield*/, conn.query(sql, [userId])];
+                        sql = 'UPDATE orders SET status=$1 WHERE id=$2 RETURNING *';
+                        return [4 /*yield*/, conn.query(sql, [status, orderId])];
                     case 3:
                         result = _a.sent();
-                        if (result.rows.length) {
-                            selectedUser = result.rows[0];
-                            if (bcrypt_1.default.compareSync(password + pepper, selectedUser.password)) {
-                                token = jsonwebtoken_1.default.sign({
-                                    userId: selectedUser.id,
-                                    fName: selectedUser.firstName,
-                                    lName: selectedUser.lastName,
-                                    role: selectedUser.role,
-                                }, secret, { expiresIn: '1h' });
-                                conn.release();
-                                return [2 /*return*/, token];
-                            }
-                            else {
-                                throw new Error('User authentication failed');
-                            }
-                        }
-                        else {
-                            throw new Error('No user found');
-                        }
-                        return [3 /*break*/, 5];
+                        conn.release();
+                        return [2 /*return*/, result.rows[0]];
                     case 4:
                         err_4 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to authenticate user.', err_4);
+                        console.log('Failed to update the order details', err_4);
                         throw err_4;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    return UserModel;
+    /* method : addProduct. Adds the given product details into the order
+       input params : Order id, Product id, quantity
+       return : Promise<OrderProducts> */
+    OrderModel.prototype.addProduct = function (orderId, productId, quantity) {
+        return __awaiter(this, void 0, void 0, function () {
+            var conn, sql, result, date, err_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, database_1.default.connect()];
+                    case 1:
+                        conn = _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 7, , 8]);
+                        sql = 'SELECT * FROM orders WHERE id=$1';
+                        return [4 /*yield*/, conn.query(sql, [orderId])];
+                    case 3:
+                        result = _a.sent();
+                        if (!(result.rows.length && result.rows[0].status === 'Open')) return [3 /*break*/, 5];
+                        date = new Date().toLocaleString();
+                        sql =
+                            'INSERT INTO order_products (orderId, productId, quantity, createdDate) VALUES ($1, $2, $3, $4) RETURNING *';
+                        return [4 /*yield*/, conn.query(sql, [
+                                orderId,
+                                productId,
+                                quantity,
+                                date,
+                            ])];
+                    case 4:
+                        result = _a.sent();
+                        conn.release();
+                        return [2 /*return*/, result.rows[0]];
+                    case 5: throw new Error('Order not found or order is not open');
+                    case 6: return [3 /*break*/, 8];
+                    case 7:
+                        err_5 = _a.sent();
+                        // Incase of any error occured relese client before handling the exception
+                        conn.release();
+                        console.log('Failed to add the product details into order', err_5);
+                        throw err_5;
+                    case 8: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return OrderModel;
 }());
-exports.UserModel = UserModel;
+exports.OrderModel = OrderModel;

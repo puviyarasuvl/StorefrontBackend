@@ -35,48 +35,85 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var user_1 = require("../../models/user");
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var userModel = new user_1.UserModel();
-var secret = process.env.JWT_SECRET;
-var newUser = {
-    id: 'testUser',
-    firstName: 'Test',
-    lastName: 'User',
-    password: 'testpassword123',
-    role: 'admin',
+var order_1 = require("../../models/order");
+var orderModel = new order_1.OrderModel();
+var order = {
+    id: 1,
+    userid: 'testUser',
+    status: 'Open',
 };
-var newUser2 = {
-    id: 'testUser2',
-    firstName: 'Test',
-    lastName: 'User',
-    password: 'testpassword123',
-    role: 'customer',
-};
-describe('Testing User Model', function () {
+describe('Testing Order Model', function () {
     describe('create method', function () {
-        it('should add user to database and return auth token', function () { return __awaiter(void 0, void 0, void 0, function () {
+        it('should create a new order for the given user', function () { return __awaiter(void 0, void 0, void 0, function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.create(newUser)];
+                    case 0: return [4 /*yield*/, orderModel.create('testUser')];
                     case 1:
                         result = _a.sent();
-                        jsonwebtoken_1.default.verify(result, secret);
-                        return [4 /*yield*/, userModel.create(newUser2)];
+                        expect(result).toEqual(order);
+                        return [4 /*yield*/, orderModel.create('testUser2')];
                     case 2:
                         result = _a.sent();
-                        jsonwebtoken_1.default.verify(result, secret);
+                        expect(result).toEqual({
+                            id: 2,
+                            userid: 'testUser2',
+                            status: 'Open',
+                        });
                         return [2 /*return*/];
                 }
             });
         }); });
-        it('should throw exception while add duplicate user', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error, err_1;
+    });
+    describe('index method', function () {
+        it('should return all the orders', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, orderModel.index()];
+                    case 1:
+                        result = _a.sent();
+                        expect(result.length).toEqual(2);
+                        expect(result[0]).toEqual(order);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+    });
+    describe('show method', function () {
+        it('should return order details based on given order id', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, orderModel.show(1)];
+                    case 1:
+                        result = _a.sent();
+                        expect(result).toEqual(order);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+    });
+    describe('update method', function () {
+        it('should update the order status to provided status', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, orderModel.update(1, 'Placed')];
+                    case 1:
+                        result = _a.sent();
+                        expect(result.status).toEqual('Placed');
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+    });
+});
+describe('Testing Order Products', function () {
+    describe('addProduct method', function () {
+        it('should throw error while adding products, if order is not open', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var error, result, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -84,100 +121,36 @@ describe('Testing User Model', function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, userModel.create(newUser)];
+                        return [4 /*yield*/, orderModel.addProduct(1, 1, 20)];
                     case 2:
-                        _a.sent();
+                        result = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
                         err_1 = _a.sent();
                         error = err_1;
                         return [3 /*break*/, 4];
                     case 4:
-                        expect(error).not.toBeUndefined();
+                        expect(error).toEqual(new Error('Order not found or order is not open'));
                         return [2 /*return*/];
                 }
             });
         }); });
-    });
-    describe('index method', function () {
-        it('should return all available users', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.index()];
-                    case 1:
-                        result = _a.sent();
-                        expect(result.length).toEqual(2);
-                        expect(result[0].id).toEqual(newUser.id);
-                        expect(result[1].id).toEqual(newUser2.id);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-    });
-    describe('show method', function () {
-        it('should return details of the given user', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.show('testUser')];
-                    case 1:
-                        result = _a.sent();
-                        expect(result.id).toEqual(newUser.id);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-    });
-    describe('authenticate method', function () {
-        it('should authenticate the user and return auth token', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.authenticate('testUser', 'testpassword123')];
-                    case 1:
-                        result = _a.sent();
-                        jsonwebtoken_1.default.verify(result, secret);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should throw error for wrong user credentials', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error, err_2;
+        it('should add the product successfully', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var date, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, userModel.authenticate('testUser', 'testpassword')];
+                        date = new Date().toLocaleString();
+                        return [4 /*yield*/, orderModel.addProduct(2, 3, 2)];
                     case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_2 = _a.sent();
-                        error = err_2;
-                        return [3 /*break*/, 3];
-                    case 3:
-                        expect(error).toEqual(new Error('User authentication failed'));
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should throw error if user not found', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error, err_3;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, userModel.authenticate('testUser1', 'testpassword')];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_3 = _a.sent();
-                        error = err_3;
-                        return [3 /*break*/, 3];
-                    case 3:
-                        expect(error).toEqual(new Error('No user found'));
+                        result = _a.sent();
+                        expect(result).toEqual({
+                            id: 1,
+                            orderid: 2,
+                            productid: 3,
+                            quantity: 2,
+                            createddate: date,
+                        });
                         return [2 /*return*/];
                 }
             });

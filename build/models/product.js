@@ -39,69 +39,51 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserModel = void 0;
+exports.ProductModel = void 0;
 var database_1 = __importDefault(require("../database"));
-var bcrypt_1 = __importDefault(require("bcrypt"));
-var dotenv_1 = __importDefault(require("dotenv"));
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-dotenv_1.default.config();
-var pepper = process.env.BCRYPT_PASSWORD;
-var saltRounds = process.env.SALT_ROUNDS;
-var secret = process.env.JWT_SECRET;
-/* Class to represent the users table */
-var UserModel = /** @class */ (function () {
-    function UserModel() {
+/* Class to represent the products table */
+var ProductModel = /** @class */ (function () {
+    function ProductModel() {
     }
-    /* method : create. Creates a new user using the given details and return auth token
-       input params : User
-       return : Promise<string> */
-    UserModel.prototype.create = function (newUser) {
+    /* method : create. Creates a new product using the given details and returns created product
+       input params : Product
+       return : Promise<Product> */
+    ProductModel.prototype.create = function (newProduct) {
         return __awaiter(this, void 0, void 0, function () {
-            var passwordHash, conn, sql, result, createdUser, token, err_1;
+            var conn, sql, result, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        passwordHash = bcrypt_1.default.hashSync(newUser.password + pepper, parseInt(saltRounds));
-                        return [4 /*yield*/, database_1.default.connect()];
+                    case 0: return [4 /*yield*/, database_1.default.connect()];
                     case 1:
                         conn = _a.sent();
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'INSERT INTO users (id, firstname, lastname, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+                        sql = 'INSERT INTO products (name, price, category) VALUES ($1, $2, $3) RETURNING *';
                         return [4 /*yield*/, conn.query(sql, [
-                                newUser.id,
-                                newUser.firstName,
-                                newUser.lastName,
-                                passwordHash,
-                                newUser.role,
+                                newProduct.name,
+                                newProduct.price,
+                                newProduct.category,
                             ])];
                     case 3:
                         result = _a.sent();
-                        createdUser = result.rows[0];
-                        token = jsonwebtoken_1.default.sign({
-                            userId: createdUser.id,
-                            fName: createdUser.firstName,
-                            lName: createdUser.lastName,
-                            role: createdUser.role,
-                        }, secret, { expiresIn: '1h' });
                         conn.release();
-                        return [2 /*return*/, token];
+                        return [2 /*return*/, result.rows[0]];
                     case 4:
                         err_1 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to create new user.', err_1);
+                        console.log('Failed to insert product into db', err_1);
                         throw err_1;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    /* method : index. Returns all the users information.
+    /* method : index. Returns all the products information.
        input params :
-       return : Promise<User []> */
-    UserModel.prototype.index = function () {
+       return : Promise<Product []> */
+    ProductModel.prototype.index = function () {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, err_2;
             return __generator(this, function (_a) {
@@ -112,7 +94,7 @@ var UserModel = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'SELECT * FROM users';
+                        sql = 'SELECT * FROM products';
                         return [4 /*yield*/, conn.query(sql)];
                     case 3:
                         result = _a.sent();
@@ -122,17 +104,17 @@ var UserModel = /** @class */ (function () {
                         err_2 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to query all users.', err_2);
+                        console.log('Failed to fetch the products', err_2);
                         throw err_2;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    /* method : show. Returns the requested user's details
-       input params : user id
-       return : Promise<User> */
-    UserModel.prototype.show = function (userId) {
+    /* method : show. Returns the product information based on given product id
+       input params : product id
+       return : Promise<Product> */
+    ProductModel.prototype.show = function (productId) {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, err_3;
             return __generator(this, function (_a) {
@@ -143,8 +125,8 @@ var UserModel = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'SELECT * FROM users WHERE id=$1';
-                        return [4 /*yield*/, conn.query(sql, [userId])];
+                        sql = 'SELECT * FROM products WHERE id=$1';
+                        return [4 /*yield*/, conn.query(sql, [productId])];
                     case 3:
                         result = _a.sent();
                         conn.release();
@@ -153,19 +135,19 @@ var UserModel = /** @class */ (function () {
                         err_3 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to query user details.', err_3);
+                        console.log('Failed to fetch the product information', err_3);
                         throw err_3;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    /* method : authenticate. Authenticates provided user and returns JWT token on succesful authentication
-       input params : User
-       return : Promise<string> */
-    UserModel.prototype.authenticate = function (userId, password) {
+    /* method : delete. Deletes the product information based on given product id
+       input params : product id
+       return : Promise<number>. Returns the no of deleted rows */
+    ProductModel.prototype.delete = function (productId) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, result, selectedUser, token, err_4;
+            var conn, sql, result, err_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, database_1.default.connect()];
@@ -174,41 +156,23 @@ var UserModel = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        sql = 'SELECT * FROM users WHERE id=$1';
-                        return [4 /*yield*/, conn.query(sql, [userId])];
+                        sql = 'DELETE FROM products WHERE id=$1';
+                        return [4 /*yield*/, conn.query(sql, [productId])];
                     case 3:
                         result = _a.sent();
-                        if (result.rows.length) {
-                            selectedUser = result.rows[0];
-                            if (bcrypt_1.default.compareSync(password + pepper, selectedUser.password)) {
-                                token = jsonwebtoken_1.default.sign({
-                                    userId: selectedUser.id,
-                                    fName: selectedUser.firstName,
-                                    lName: selectedUser.lastName,
-                                    role: selectedUser.role,
-                                }, secret, { expiresIn: '1h' });
-                                conn.release();
-                                return [2 /*return*/, token];
-                            }
-                            else {
-                                throw new Error('User authentication failed');
-                            }
-                        }
-                        else {
-                            throw new Error('No user found');
-                        }
-                        return [3 /*break*/, 5];
+                        conn.release();
+                        return [2 /*return*/, result.rowCount];
                     case 4:
                         err_4 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
-                        console.log('Failed to authenticate user.', err_4);
+                        console.log('Failed to delete the product information', err_4);
                         throw err_4;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    return UserModel;
+    return ProductModel;
 }());
-exports.UserModel = UserModel;
+exports.ProductModel = ProductModel;

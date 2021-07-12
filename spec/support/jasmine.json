@@ -1,6 +1,10 @@
 {
     "spec_dir": "build/tests",
-    "spec_files": ["**/*[sS]pec.js"],
+    "spec_files": [
+        "models/userSpec.js",
+        "models/productSpec.js",
+        "models/orderSpec.js"
+    ],
     "helpers": ["helpers/**/*.js"],
     "reporters": [
         {

@@ -17,7 +17,7 @@ export type User = {
     role: string;
 };
 
-/* Class to represent the user table */
+/* Class to represent the users table */
 export class UserModel {
     /* method : create. Creates a new user using the given details and return auth token
        input params : User

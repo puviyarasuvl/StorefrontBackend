@@ -35,149 +35,120 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var user_1 = require("../../models/user");
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var userModel = new user_1.UserModel();
-var secret = process.env.JWT_SECRET;
-var newUser = {
-    id: 'testUser',
-    firstName: 'Test',
-    lastName: 'User',
-    password: 'testpassword123',
-    role: 'admin',
+var product_1 = require("../../models/product");
+var productModel = new product_1.ProductModel();
+var newProduct = {
+    id: 1,
+    name: 'Samsung M31',
+    price: 15000.0,
+    category: 'Mobiles',
 };
-var newUser2 = {
-    id: 'testUser2',
-    firstName: 'Test',
-    lastName: 'User',
-    password: 'testpassword123',
-    role: 'customer',
+var newProduct2 = {
+    id: 2,
+    name: 'HP Elitebook',
+    price: 75000.0,
+    category: 'PC',
 };
-describe('Testing User Model', function () {
+var newProduct3 = {
+    id: 3,
+    name: 'Apple iPhone 10',
+    price: 60000.0,
+    category: 'Mobiles',
+};
+describe('Testing Product Model', function () {
     describe('create method', function () {
-        it('should add user to database and return auth token', function () { return __awaiter(void 0, void 0, void 0, function () {
+        it('should successfully add the product to database and return the added product', function () { return __awaiter(void 0, void 0, void 0, function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.create(newUser)];
+                    case 0: return [4 /*yield*/, productModel.create(newProduct)];
                     case 1:
                         result = _a.sent();
-                        jsonwebtoken_1.default.verify(result, secret);
-                        return [4 /*yield*/, userModel.create(newUser2)];
+                        expect(result).toEqual(newProduct);
+                        return [4 /*yield*/, productModel.create(newProduct2)];
                     case 2:
                         result = _a.sent();
-                        jsonwebtoken_1.default.verify(result, secret);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should throw exception while add duplicate user', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error, err_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        expect(error).toBeUndefined();
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, userModel.create(newUser)];
-                    case 2:
-                        _a.sent();
-                        return [3 /*break*/, 4];
+                        expect(result).toEqual(newProduct2);
+                        return [4 /*yield*/, productModel.create(newProduct3)];
                     case 3:
-                        err_1 = _a.sent();
-                        error = err_1;
-                        return [3 /*break*/, 4];
-                    case 4:
-                        expect(error).not.toBeUndefined();
+                        result = _a.sent();
+                        expect(result).toEqual(newProduct3);
                         return [2 /*return*/];
                 }
             });
         }); });
     });
     describe('index method', function () {
-        it('should return all available users', function () { return __awaiter(void 0, void 0, void 0, function () {
+        it('should return all availale products', function () { return __awaiter(void 0, void 0, void 0, function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.index()];
+                    case 0: return [4 /*yield*/, productModel.index()];
                     case 1:
                         result = _a.sent();
-                        expect(result.length).toEqual(2);
-                        expect(result[0].id).toEqual(newUser.id);
-                        expect(result[1].id).toEqual(newUser2.id);
+                        expect(result.length).toEqual(3);
+                        expect(result).toEqual([newProduct, newProduct2, newProduct3]);
                         return [2 /*return*/];
                 }
             });
         }); });
     });
     describe('show method', function () {
-        it('should return details of the given user', function () { return __awaiter(void 0, void 0, void 0, function () {
+        it('should return the product details based on the given id', function () { return __awaiter(void 0, void 0, void 0, function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.show('testUser')];
+                    case 0: return [4 /*yield*/, productModel.show(1)];
                     case 1:
                         result = _a.sent();
-                        expect(result.id).toEqual(newUser.id);
+                        expect(result).toEqual(newProduct);
+                        return [4 /*yield*/, productModel.show(2)];
+                    case 2:
+                        result = _a.sent();
+                        expect(result).toEqual(newProduct2);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('should return nothing if invalid product is passed', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, productModel.show(12)];
+                    case 1:
+                        result = _a.sent();
+                        expect(result).toBeUndefined;
                         return [2 /*return*/];
                 }
             });
         }); });
     });
-    describe('authenticate method', function () {
-        it('should authenticate the user and return auth token', function () { return __awaiter(void 0, void 0, void 0, function () {
+    describe('delete method', function () {
+        it('should successfully delete the product from db', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var result, result1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, productModel.delete(1)];
+                    case 1:
+                        result = _a.sent();
+                        expect(result).toEqual(1);
+                        return [4 /*yield*/, productModel.index()];
+                    case 2:
+                        result1 = _a.sent();
+                        expect(result1.length).toEqual(2);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('should return 0 as row count if invalid product id passed', function () { return __awaiter(void 0, void 0, void 0, function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, userModel.authenticate('testUser', 'testpassword123')];
+                    case 0: return [4 /*yield*/, productModel.delete(10)];
                     case 1:
                         result = _a.sent();
-                        jsonwebtoken_1.default.verify(result, secret);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should throw error for wrong user credentials', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error, err_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, userModel.authenticate('testUser', 'testpassword')];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_2 = _a.sent();
-                        error = err_2;
-                        return [3 /*break*/, 3];
-                    case 3:
-                        expect(error).toEqual(new Error('User authentication failed'));
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should throw error if user not found', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error, err_3;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, userModel.authenticate('testUser1', 'testpassword')];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_3 = _a.sent();
-                        error = err_3;
-                        return [3 /*break*/, 3];
-                    case 3:
-                        expect(error).toEqual(new Error('No user found'));
+                        expect(result).toEqual(0);
                         return [2 /*return*/];
                 }
             });
