@@ -21,6 +21,14 @@ const newUser2: User = {
     role: 'customer',
 };
 
+const newUser3: User = {
+    id: 'testUser3',
+    firstName: 'Test',
+    lastName: 'User',
+    password: 'testpassword123',
+    role: 'customer',
+};
+
 describe('Testing User Model', () => {
     describe('create method', () => {
         it('should add user to database and return auth token', async () => {
@@ -28,6 +36,9 @@ describe('Testing User Model', () => {
             jwt.verify(result, secret);
 
             result = await userModel.create(newUser2);
+            jwt.verify(result, secret);
+
+            result = await userModel.create(newUser3);
             jwt.verify(result, secret);
         });
 
@@ -49,7 +60,7 @@ describe('Testing User Model', () => {
     describe('index method', () => {
         it('should return all available users', async () => {
             const result = await userModel.index();
-            expect(result.length).toEqual(2);
+            expect(result.length).toEqual(3);
             expect(result[0].id).toEqual(newUser.id);
             expect(result[1].id).toEqual(newUser2.id);
         });

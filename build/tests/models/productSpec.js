@@ -154,4 +154,19 @@ describe('Testing Product Model', function () {
             });
         }); });
     });
+    describe('productsByCategory', function () {
+        it('should return the products for given category', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, productModel.productsByCategory('Mobiles')];
+                    case 1:
+                        result = _a.sent();
+                        expect(result.length).toEqual(1);
+                        expect(result[0]).toEqual(newProduct3);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+    });
 });

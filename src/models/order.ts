@@ -1,9 +1,10 @@
 import pool from '../database';
 
 export type Order = {
-    id?: number;
+    id: number;
     userid: string;
     status: string;
+    createddate: string;
 };
 
 export type OrderProduct = {
@@ -11,7 +12,6 @@ export type OrderProduct = {
     orderid: number;
     productid: number;
     quantity: number;
-    createddate: string;
 };
 
 /* Class to represent the orders table */
@@ -24,12 +24,22 @@ export class OrderModel {
         const status = 'Open';
 
         try {
-            const sql =
-                'INSERT INTO orders (userId, status) VALUES ($1, $2) RETURNING *';
-            const result = await conn.query(sql, [userId, status]);
+            let sql = 'SELECT * FROM orders WHERE userId=$1 AND status=$2';
+            let result = await conn.query(sql, [userId, 'Open']);
 
-            conn.release();
-            return result.rows[0];
+            if (result.rows.length === 0) {
+                const date = new Date().toLocaleString();
+                sql =
+                    'INSERT INTO orders (userId, status, createdDate) VALUES ($1, $2, $3) RETURNING *';
+                result = await conn.query(sql, [userId, status, date]);
+
+                conn.release();
+                return result.rows[0];
+            } else {
+                throw new Error(
+                    'Cannot create two open orders(cart) for single user'
+                );
+            }
         } catch (err) {
             // Incase of any error occured relese client before handling the exception
             conn.release();
@@ -122,15 +132,9 @@ export class OrderModel {
 
             // Add products to the order only if the order status is Open
             if (result.rows.length && result.rows[0].status === 'Open') {
-                const date = new Date().toLocaleString();
                 sql =
-                    'INSERT INTO order_products (orderId, productId, quantity, createdDate) VALUES ($1, $2, $3, $4) RETURNING *';
-                result = await conn.query(sql, [
-                    orderId,
-                    productId,
-                    quantity,
-                    date,
-                ]);
+                    'INSERT INTO order_products (orderId, productId, quantity) VALUES ($1, $2, $3) RETURNING *';
+                result = await conn.query(sql, [orderId, productId, quantity]);
 
                 conn.release();
                 return result.rows[0];

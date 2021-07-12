@@ -101,4 +101,29 @@ export class ProductModel {
             throw err;
         }
     }
+
+    /* method : productsByCategory. Returns the product details for given category
+       input params : product category
+       return : Promise<Product[]> */
+    async productsByCategory(category: string): Promise<Product[]> {
+        const conn = await pool.connect();
+
+        try {
+            const sql = 'SELECT * FROM products WHERE category=$1';
+            const result = await conn.query(sql, [category]);
+
+            conn.release();
+            return result.rows;
+        } catch (err) {
+            // Incase of any error occured relese client before handling the exception
+            conn.release();
+
+            console.log(
+                'Failed to fetch the product details for given category',
+                err
+            );
+
+            throw err;
+        }
+    }
 }

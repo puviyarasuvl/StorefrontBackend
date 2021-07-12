@@ -173,6 +173,37 @@ var ProductModel = /** @class */ (function () {
             });
         });
     };
+    /* method : productsByCategory. Returns the product details for given category
+       input params : product category
+       return : Promise<Product[]> */
+    ProductModel.prototype.productsByCategory = function (category) {
+        return __awaiter(this, void 0, void 0, function () {
+            var conn, sql, result, err_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, database_1.default.connect()];
+                    case 1:
+                        conn = _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        sql = 'SELECT * FROM products WHERE category=$1';
+                        return [4 /*yield*/, conn.query(sql, [category])];
+                    case 3:
+                        result = _a.sent();
+                        conn.release();
+                        return [2 /*return*/, result.rows];
+                    case 4:
+                        err_5 = _a.sent();
+                        // Incase of any error occured relese client before handling the exception
+                        conn.release();
+                        console.log('Failed to fetch the product details for given category', err_5);
+                        throw err_5;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return ProductModel;
 }());
 exports.ProductModel = ProductModel;

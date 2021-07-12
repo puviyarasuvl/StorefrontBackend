@@ -3,7 +3,8 @@
     "spec_files": [
         "models/userSpec.js",
         "models/productSpec.js",
-        "models/orderSpec.js"
+        "models/orderSpec.js",
+        "services/customerDashboardSpec.js"
     ],
     "helpers": ["helpers/**/*.js"],
     "reporters": [

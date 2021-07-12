@@ -75,4 +75,12 @@ describe('Testing Product Model', () => {
             expect(result).toEqual(0);
         });
     });
+
+    describe('productsByCategory', () => {
+        it('should return the products for given category', async () => {
+            const result = await productModel.productsByCategory('Mobiles');
+            expect(result.length).toEqual(1);
+            expect(result[0]).toEqual(newProduct3);
+        });
+    });
 });

@@ -38,10 +38,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var order_1 = require("../../models/order");
 var orderModel = new order_1.OrderModel();
+var date = new Date().toLocaleString();
 var order = {
     id: 1,
-    userid: 'testUser',
+    userid: 'testUser2',
     status: 'Open',
+    createddate: date,
 };
 describe('Testing Order Model', function () {
     describe('create method', function () {
@@ -49,18 +51,38 @@ describe('Testing Order Model', function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, orderModel.create('testUser')];
+                    case 0:
+                        order.createddate = new Date().toLocaleString();
+                        return [4 /*yield*/, orderModel.create('testUser2')];
                     case 1:
                         result = _a.sent();
                         expect(result).toEqual(order);
+                        return [4 /*yield*/, orderModel.create('testUser3')];
+                    case 2:
+                        result = _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('should throw error if trying to create another open order(cart) for same user', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var error, result, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        expect(error).toBeUndefined();
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, orderModel.create('testUser2')];
                     case 2:
                         result = _a.sent();
-                        expect(result).toEqual({
-                            id: 2,
-                            userid: 'testUser2',
-                            status: 'Open',
-                        });
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        error = err_1;
+                        return [3 /*break*/, 4];
+                    case 4:
+                        expect(error).toEqual(new Error('Cannot create two open orders(cart) for single user'));
                         return [2 /*return*/];
                 }
             });
@@ -71,7 +93,9 @@ describe('Testing Order Model', function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, orderModel.index()];
+                    case 0:
+                        order.createddate = new Date().toLocaleString();
+                        return [4 /*yield*/, orderModel.index()];
                     case 1:
                         result = _a.sent();
                         expect(result.length).toEqual(2);
@@ -86,7 +110,9 @@ describe('Testing Order Model', function () {
             var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, orderModel.show(1)];
+                    case 0:
+                        order.createddate = new Date().toLocaleString();
+                        return [4 /*yield*/, orderModel.show(1)];
                     case 1:
                         result = _a.sent();
                         expect(result).toEqual(order);
@@ -113,7 +139,7 @@ describe('Testing Order Model', function () {
 describe('Testing Order Products', function () {
     describe('addProduct method', function () {
         it('should throw error while adding products, if order is not open', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error, result, err_1;
+            var error, result, err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -126,8 +152,8 @@ describe('Testing Order Products', function () {
                         result = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        err_1 = _a.sent();
-                        error = err_1;
+                        err_2 = _a.sent();
+                        error = err_2;
                         return [3 /*break*/, 4];
                     case 4:
                         expect(error).toEqual(new Error('Order not found or order is not open'));
@@ -136,12 +162,10 @@ describe('Testing Order Products', function () {
             });
         }); });
         it('should add the product successfully', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var date, result;
+            var result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        date = new Date().toLocaleString();
-                        return [4 /*yield*/, orderModel.addProduct(2, 3, 2)];
+                    case 0: return [4 /*yield*/, orderModel.addProduct(2, 3, 2)];
                     case 1:
                         result = _a.sent();
                         expect(result).toEqual({
@@ -149,7 +173,6 @@ describe('Testing Order Products', function () {
                             orderid: 2,
                             productid: 3,
                             quantity: 2,
-                            createddate: date,
                         });
                         return [2 /*return*/];
                 }

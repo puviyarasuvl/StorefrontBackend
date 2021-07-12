@@ -1,30 +1,45 @@
 import { Order, OrderModel } from '../../models/order';
 
 const orderModel = new OrderModel();
+let date = new Date().toLocaleString();
 
 const order: Order = {
     id: 1,
-    userid: 'testUser',
+    userid: 'testUser2',
     status: 'Open',
+    createddate: date,
 };
 
 describe('Testing Order Model', () => {
     describe('create method', () => {
         it('should create a new order for the given user', async () => {
-            let result = await orderModel.create('testUser');
+            order.createddate = new Date().toLocaleString();
+            let result = await orderModel.create('testUser2');
             expect(result).toEqual(order);
 
-            result = await orderModel.create('testUser2');
-            expect(result).toEqual({
-                id: 2,
-                userid: 'testUser2',
-                status: 'Open',
-            });
+            result = await orderModel.create('testUser3');
+        });
+
+        it('should throw error if trying to create another open order(cart) for same user', async () => {
+            let error;
+
+            expect(error).toBeUndefined();
+
+            try {
+                const result = await orderModel.create('testUser2');
+            } catch (err) {
+                error = err;
+            }
+
+            expect(error).toEqual(
+                new Error('Cannot create two open orders(cart) for single user')
+            );
         });
     });
 
     describe('index method', () => {
         it('should return all the orders', async () => {
+            order.createddate = new Date().toLocaleString();
             const result = await orderModel.index();
 
             expect(result.length).toEqual(2);
@@ -34,6 +49,7 @@ describe('Testing Order Model', () => {
 
     describe('show method', () => {
         it('should return order details based on given order id', async () => {
+            order.createddate = new Date().toLocaleString();
             const result = await orderModel.show(1);
 
             expect(result).toEqual(order);
@@ -68,15 +84,12 @@ describe('Testing Order Products', () => {
         });
 
         it('should add the product successfully', async () => {
-            const date = new Date().toLocaleString();
             const result = await orderModel.addProduct(2, 3, 2);
-
             expect(result).toEqual({
                 id: 1,
                 orderid: 2,
                 productid: 3,
                 quantity: 2,
-                createddate: date,
             });
         });
     });

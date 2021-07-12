@@ -57,6 +57,13 @@ var newUser2 = {
     password: 'testpassword123',
     role: 'customer',
 };
+var newUser3 = {
+    id: 'testUser3',
+    firstName: 'Test',
+    lastName: 'User',
+    password: 'testpassword123',
+    role: 'customer',
+};
 describe('Testing User Model', function () {
     describe('create method', function () {
         it('should add user to database and return auth token', function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -69,6 +76,10 @@ describe('Testing User Model', function () {
                         jsonwebtoken_1.default.verify(result, secret);
                         return [4 /*yield*/, userModel.create(newUser2)];
                     case 2:
+                        result = _a.sent();
+                        jsonwebtoken_1.default.verify(result, secret);
+                        return [4 /*yield*/, userModel.create(newUser3)];
+                    case 3:
                         result = _a.sent();
                         jsonwebtoken_1.default.verify(result, secret);
                         return [2 /*return*/];
@@ -107,7 +118,7 @@ describe('Testing User Model', function () {
                     case 0: return [4 /*yield*/, userModel.index()];
                     case 1:
                         result = _a.sent();
-                        expect(result.length).toEqual(2);
+                        expect(result.length).toEqual(3);
                         expect(result[0].id).toEqual(newUser.id);
                         expect(result[1].id).toEqual(newUser2.id);
                         return [2 /*return*/];

@@ -50,7 +50,7 @@ var OrderModel = /** @class */ (function () {
        return : Promise<Order> */
     OrderModel.prototype.create = function (userId) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, status, sql, result, err_1;
+            var conn, status, sql, result, date, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, database_1.default.connect()];
@@ -59,20 +59,29 @@ var OrderModel = /** @class */ (function () {
                         status = 'Open';
                         _a.label = 2;
                     case 2:
-                        _a.trys.push([2, 4, , 5]);
-                        sql = 'INSERT INTO orders (userId, status) VALUES ($1, $2) RETURNING *';
-                        return [4 /*yield*/, conn.query(sql, [userId, status])];
+                        _a.trys.push([2, 7, , 8]);
+                        sql = 'SELECT * FROM orders WHERE userId=$1 AND status=$2';
+                        return [4 /*yield*/, conn.query(sql, [userId, 'Open'])];
                     case 3:
+                        result = _a.sent();
+                        if (!(result.rows.length === 0)) return [3 /*break*/, 5];
+                        date = new Date().toLocaleString();
+                        sql =
+                            'INSERT INTO orders (userId, status, createdDate) VALUES ($1, $2, $3) RETURNING *';
+                        return [4 /*yield*/, conn.query(sql, [userId, status, date])];
+                    case 4:
                         result = _a.sent();
                         conn.release();
                         return [2 /*return*/, result.rows[0]];
-                    case 4:
+                    case 5: throw new Error('Cannot create two open orders(cart) for single user');
+                    case 6: return [3 /*break*/, 8];
+                    case 7:
                         err_1 = _a.sent();
                         // Incase of any error occured relese client before handling the exception
                         conn.release();
                         console.log('Failed to create new order', err_1);
                         throw err_1;
-                    case 5: return [2 /*return*/];
+                    case 8: return [2 /*return*/];
                 }
             });
         });
@@ -175,7 +184,7 @@ var OrderModel = /** @class */ (function () {
        return : Promise<OrderProducts> */
     OrderModel.prototype.addProduct = function (orderId, productId, quantity) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, result, date, err_5;
+            var conn, sql, result, err_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, database_1.default.connect()];
@@ -189,15 +198,9 @@ var OrderModel = /** @class */ (function () {
                     case 3:
                         result = _a.sent();
                         if (!(result.rows.length && result.rows[0].status === 'Open')) return [3 /*break*/, 5];
-                        date = new Date().toLocaleString();
                         sql =
-                            'INSERT INTO order_products (orderId, productId, quantity, createdDate) VALUES ($1, $2, $3, $4) RETURNING *';
-                        return [4 /*yield*/, conn.query(sql, [
-                                orderId,
-                                productId,
-                                quantity,
-                                date,
-                            ])];
+                            'INSERT INTO order_products (orderId, productId, quantity) VALUES ($1, $2, $3) RETURNING *';
+                        return [4 /*yield*/, conn.query(sql, [orderId, productId, quantity])];
                     case 4:
                         result = _a.sent();
                         conn.release();
