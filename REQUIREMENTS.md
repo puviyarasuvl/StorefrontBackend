@@ -94,7 +94,7 @@ These are the notes from a meeting with the frontend developer that describe wha
     status VARCHAR(10),
     createdDate VARCHAR(50) NOT NULL
 
-    Order Products table
+    Order Products table : Used to esablish one-to-many relationship with the orders and products table. This table will be used to add multiple products in one order. This will hold orderId from orders table and productId from products table. The order_products table will have below schema.
 
     id SERIAL PRIMARY KEY,
     orderId INTEGER REFERENCES orders(id),
