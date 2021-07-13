@@ -42,15 +42,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var supertest_1 = __importDefault(require("supertest"));
 var index_1 = __importDefault(require("../../index"));
 var request = supertest_1.default(index_1.default);
-describe('Test endpoint responses', function () {
-    it('gets the root route', function () { return __awaiter(void 0, void 0, void 0, function () {
+describe('Testing root route', function () {
+    it('[get] /api should return status 200', function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, request.get('/api')];
                 case 1:
                     response = _a.sent();
-                    expect(response.status).toBe(200);
+                    expect(response.status).toEqual(200);
                     return [2 /*return*/];
             }
         });

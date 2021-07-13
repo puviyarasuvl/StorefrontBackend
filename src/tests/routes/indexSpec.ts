@@ -3,9 +3,9 @@ import app from '../../index';
 
 const request = supertest(app);
 
-describe('Test endpoint responses', () => {
-    it('gets the root route', async () => {
+describe('Testing root route', () => {
+    it('[get] /api should return status 200', async () => {
         const response = await request.get('/api');
-        expect(response.status).toBe(200);
+        expect(response.status).toEqual(200);
     });
 });

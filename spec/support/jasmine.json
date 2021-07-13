@@ -4,7 +4,12 @@
         "models/userSpec.js",
         "models/productSpec.js",
         "models/orderSpec.js",
-        "services/customerDashboardSpec.js"
+        "services/customerDashboardSpec.js",
+        "routes/indexSpec.js",
+        "routes/api/usersSpec.js",
+        "routes/api/productsSpec.js",
+        "routes/api/ordersSpec.js",
+        "routes/api/customerDashboardSpec.js"
     ],
     "helpers": ["helpers/**/*.js"],
     "reporters": [
