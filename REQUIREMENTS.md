@@ -87,14 +87,14 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 #### Order
 
--   Orders table
+    Orders table
 
     id SERIAL PRIMARY KEY,
     userId VARCHAR(100) REFERENCES users(id),
     status VARCHAR(10),
     createdDate VARCHAR(50) NOT NULL
 
--   Order Products table
+    Order Products table
 
     id SERIAL PRIMARY KEY,
     orderId INTEGER REFERENCES orders(id),

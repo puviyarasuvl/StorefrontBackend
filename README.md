@@ -16,7 +16,7 @@
 
 ## Jasmine tests
 
-    'npm run test' to run jasmine tests. It will change the environment to test and perform tests using the test DB. It will run DB migrtions on the test DB
+    'npm run test' to run jasmine tests. It will change the environment to test and perform tests using the test DB. It will run DB migrtions on the test DB. Sometimes very rarely i am getting one or two test case failures due to timing issue. I will try to resolve them.
 
 ## Start express
 
